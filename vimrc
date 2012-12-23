@@ -87,6 +87,7 @@ NeoBundle 'Shougo/neobundle.vim'
 " after install, turn shell ~/.vim/bundle/vimproc, (n,g)make -f your_machines_makefile
 " NeoBundle 'Shougo/vimshell'
 NeoBundle 'Shougo/unite.vim'
+NeoBundle 'teramako/jscomplete-vim'
 
 " My Create plugin
 " NeoBundle 'AtsushiM/simple-todo'
@@ -97,6 +98,7 @@ NeoBundle 'AtsushiM/css-skelton.vim'
 NeoBundle 'AtsushiM/RetinaResize'
 NeoBundle 'AtsushiM/html-minifier.vim'
 NeoBundle 'AtsushiM/css-minifier.vim'
+NeoBundle 'AtsushiM/total-minifier.vim'
 NeoBundle 'AtsushiM/auto-make.vim'
 NeoBundle 'AtsushiM/sass-compile.vim'
 NeoBundle 'AtsushiM/get-gitrepo.vim'
@@ -109,10 +111,11 @@ NeoBundle 'AtsushiM/goodbye-jquery.vim'
 NeoBundle 'AtsushiM/image2base64.vim'
 " NeoBundle 'AtsushiM/haml-compiler.vim'
 NeoBundle 'AtsushiM/jasmine-helper.vim'
+NeoBundle 'AtsushiM/oop-js.vim'
 
 " My Bundles here:
 NeoBundle 'Shougo/neocomplcache'
-NeoBundle 'Shougo/neocomplcache-snippets-complete'
+" NeoBundle 'Shougo/neosnippet'
 NeoBundle 'Shougo/vimfiler'
 " NeoBundle 'kchmck/vim-coffee-script'
 NeoBundle 'othree/html5.vim'
@@ -149,23 +152,8 @@ autocmd FileType jsx compiler jsx
 filetype plugin indent on " required!
 
 nnoremap <F3> :e /Applications/XAMPP/xamppfiles/etc/extra/httpd-vhosts.conf<CR>
-nnoremap <F4> :e ~/.vim/vimrc<CR>
+nnoremap <F4> :e ~/.vim/vimrc/vimrc<CR>
 nnoremap <F5> :source %<CR>
-
-" map setting
-" nnoremap j gj
-" nnoremap k gk
-" nnoremap gj j
-" nnoremap gk k
-" nnoremap <tab> f=2l
-" inoremap <tab> <Tab>
-" nnoremap <s-tab> 2F=2l
-" nnoremap <C-i> <ESC>
-" inoremap <C-i> <ESC>
-" vnoremap <C-i> <ESC>
-" cnoremap <C-i> <ESC>
-" onoremap <C-i> <ESC>
-" inoremap <D-o> <C-o>
 
 "jjでESC
 inoremap <expr> j getline('.')[col('.')-2] ==# 'j' ? "\<BS>\<ESC>" : 'j'
@@ -206,6 +194,9 @@ nnoremap <silent> ;w :w<CR>
 
 "quit window
 nnoremap <silent> ;d :q<CR>
+
+"insert
+nnoremap <silent> <S-A> $i
 
 "line select
 nnoremap vv ^v$h
@@ -249,13 +240,12 @@ nnoremap zj zt
 vnoremap <silent> * "vy/\V<C-r>=substitute(escape(@v,'\/'),"\n",'\\n','g')<CR><CR>
 
 "expand mark
-nnoremap <silent> ms ms%
+nnoremap ms ms%
 nnoremap <silent> my my:'s,'yy<CR>
 nnoremap <silent> md md:'s,'dd<CR>
 nnoremap mr mr:'s,'rs///g<Left><Left><Left>
 
 "grep
-" nnoremap ;g :vimgrep<Space>//j<Space>**.*<Space>\|<Space>cw<Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left>
 nnoremap ;gr :Ack<Space>
 
 "replace
@@ -305,6 +295,7 @@ let g:sass_compile_aftercmd = "growlnotify -t 'sass-compile.vim' -m ${sasscompil
 
 " auto-make
 let g:auto_make_file = ['js']
+let g:auto_make_update_ext = 'js'
 
 " RetinaResize
 let g:RetinaResize_Comment = 0
@@ -318,9 +309,26 @@ nnoremap ;cs :CssSkelton<CR>
 nnoremap ;cm :CssSkeltonMono<CR>
 nnoremap ;cp :CssPaste<CR>
 
+" oop-js
+let g:oopjs_ignorecheckfile = ['test\.js', 'min\.js', 'combine\.js', 'lib\/.\+\.js', 'hybrid-app-library\/.\+\.js']
+let g:oopjs_autocheck = 1
+let g:oopjs_linelimitnum = 50
+let g:oopjs_varlimitnum = 5
+let g:oopjs_dotlimitnum = 5
+let g:oopjs_iflimitnum = 10
+let g:oopjs_elselimitnum = 1
+let g:oopjs_switchlimitnum = 1
+let g:oopjs_anonymousfunctionlimitnum = 5
+let g:oopjs_namedfunctionlimitnum = 5
+
 " neobundle
 nnoremap ;nbi :NeoBundleInstall<CR>
 nnoremap ;nbu :NeoBundleInstall!<CR>
+
+" jscomplete
+autocmd FileType javascript
+  \ :setl omnifunc=jscomplete#CompleteJS
+let g:jscomplete_use = ['dom', 'moz', 'xpcom', 'es6th']
 
 " gundo
 nnoremap <silent> ;gu :GundoToggle<CR>
@@ -339,16 +347,8 @@ au BufWritePost *.coffee CoffeeMake! -cb | cwindow | redraw!
 " let g:quickrun_config = {}
 " let g:quickrun_config['coffee'] = {'command' : 'coffee', 'exec' : ['%c -cbp %s']}
 
-" YankRing
-" nnoremap ;yc :YRClear<CR>
-" nnoremap ;yy :YRShow<CR>
-" nnoremap ;ys :YRSearch<Space>
-
 " matchit.vim
 runtime macros/matchit.vim
-
-" calc
-" nnoremap <silent> ;ca :Calc<CR>
 
 " chrome check(chrome reload)
 nnoremap <silent> ;cc :ChromeReload<CR>
@@ -360,8 +360,8 @@ function! s:javascript_filetype_settings()
   inoremap <buffer><expr> : smartchr#loop(': ',':')
   inoremap <buffer><expr> ! smartchr#loop('!',' !== ')
   inoremap <buffer><expr> = smartchr#loop(' = ',' === ','=')
-  inoremap <buffer><expr> + smartchr#loop(' + ',' += ','++;','+')
-  inoremap <buffer><expr> - smartchr#loop(' - ',' -= ','--;','-')
+  inoremap <buffer><expr> + smartchr#loop(' + ',' += ','++','+')
+  inoremap <buffer><expr> - smartchr#loop(' - ',' -= ','--','-')
   inoremap <buffer><expr> ( smartchr#loop(' (','(')
   inoremap <buffer> {} {}<LEFT>
   inoremap <buffer> [] []<LEFT>
@@ -426,17 +426,6 @@ if !exists('g:neocomplcache_keyword_patterns')
 endif
 let g:neocomplcache_keyword_patterns['default'] = '\h\w*'
 
-let g:neocomplcache_snippets_dir = "~/.vim/snippets"
-" Define dictionary.
-let g:neocomplcache_dictionary_filetype_lists = {
-    \ 'default'    : '',
-    \ 'javascript' : $HOME . '/.vim/dict/javascript.dict'
-    \ }
-
-" Define Keybinds.
-imap <expr><C-s> neocomplcache#sources#snippets_complete#expandable() ? "\<Plug>(neocomplcache_snippets_expand)" : "\<C-n>"
-smap <C-s> <Plug>(neocomplcache_snippets_expand)
-
 " unite.vim
 " 入力モードで開始する
 let g:unite_enable_start_insert=1
@@ -454,6 +443,14 @@ imap <C-u> <Plug>(neocomplcache_start_unite_complete)
 " indent-guide
 let g:indent_guides_enable_on_vim_startup = 1
 let g:indent_guides_guide_size = 1
+
+" template
+augroup templateload
+    au!
+    au BufNewFile *.js 0r ~/.vim/skelton/skelton.js
+    au BufNewFile *.js %substitute#__CLASSNAME__#\=expand("%:t:r")
+    au BufNewFile *.js call s:javascript_filetype_settings()
+augroup END
 
 "insert comment to end tag
 function! Endtagcomment()
@@ -518,15 +515,3 @@ function! CSS3PropertyDuplicate()
   let @@ = reg_save
 endfunction
 nnoremap ,3 :<C-u>call CSS3PropertyDuplicate()<CR>
-
-function! WindowExpand()
-  set fuoptions=maxvert,maxhorz
-  set lines=90 columns=400
-  set guioptions-=T
-  "au GUIEnter * set fullscreen
-
-  set showtabline=2
-  set transparency=10
-endfunction
-
-call WindowExpand()
