@@ -53,10 +53,10 @@ au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g
 au BufEnter * set formatoptions-=ro
 
 " 保存時行末の空白を除去
-au BufWritePre * :%s/\s\+$//ge
-
-" 保存時tabを4スペースに変換
-au BufWritePre *.* :%s/\t/    /ge
+" au BufWritePre * :%s/\s\+$//ge
+"
+" " 保存時tabを4スペースに変換
+" au BufWritePre *.* :%s/\t/    /ge
 
 " vimの多重起動禁止
 runtime macros/editexisting.vim
@@ -83,14 +83,21 @@ let NeoBundle manage NeoBundle
 " required!
 NeoBundle 'Shougo/neobundle.vim'
 " recommended to install
-" NeoBundle 'Shougo/vimproc'
+NeoBundle 'Shougo/vimproc', {
+\ 'build': {
+\ 'windows': 'make -f make_mingw32.mak',
+\ 'cygwin': 'make -f make_cygwin.mak',
+\ 'mac': 'make -f make_mac.mak',
+\ 'unix': 'make -f make_unix.mak',
+\ }
+\}
 " after install, turn shell ~/.vim/bundle/vimproc, (n,g)make -f your_machines_makefile
-" NeoBundle 'Shougo/vimshell'
+NeoBundle 'Shougo/vimshell'
 NeoBundle 'Shougo/unite.vim'
 NeoBundle 'teramako/jscomplete-vim'
 
 " My Create plugin
-" NeoBundle 'AtsushiM/simple-todo'
+NeoBundle 'AtsushiM/simple-todo'
 NeoBundle 'AtsushiM/simple-memo'
 " NeoBundle 'AtsushiM/simple-bookmark'
 " NeoBundle 'AtsushiM/simple-download'
@@ -100,6 +107,8 @@ NeoBundle 'AtsushiM/html-minifier.vim'
 NeoBundle 'AtsushiM/css-minifier.vim'
 NeoBundle 'AtsushiM/total-minifier.vim'
 NeoBundle 'AtsushiM/auto-make.vim'
+NeoBundle 'AtsushiM/grunt-default.vim'
+NeoBundle 'AtsushiM/coffee-cake.vim'
 NeoBundle 'AtsushiM/sass-compile.vim'
 NeoBundle 'AtsushiM/get-gitrepo.vim'
 NeoBundle 'AtsushiM/findpath.vim'
@@ -112,12 +121,13 @@ NeoBundle 'AtsushiM/image2base64.vim'
 " NeoBundle 'AtsushiM/haml-compiler.vim'
 NeoBundle 'AtsushiM/jasmine-helper.vim'
 NeoBundle 'AtsushiM/oop-js.vim'
+NeoBundle 'AtsushiM/koko.vim'
 
 " My Bundles here:
 NeoBundle 'Shougo/neocomplcache'
 " NeoBundle 'Shougo/neosnippet'
 NeoBundle 'Shougo/vimfiler'
-" NeoBundle 'kchmck/vim-coffee-script'
+NeoBundle 'kchmck/vim-coffee-script'
 NeoBundle 'othree/html5.vim'
 " NeoBundle 'hokaccha/vim-html5validator'
 NeoBundle 'thinca/vim-qfreplace'
@@ -126,7 +136,8 @@ NeoBundle 'thinca/vim-qfreplace'
 NeoBundle 'tpope/vim-surround'
 NeoBundle 'vim-scripts/tComment'
 NeoBundle 'kana/vim-smartchr'
-NeoBundle 'mattn/zencoding-vim'
+" NeoBundle 'mattn/zencoding-vim'
+NeoBundle 'mattn/emmet-vim'
 " NeoBundle 'Lokaltog/vim-powerline'
 " NeoBundle 'mattn/gist-vim'
 " NeoBundle 'vim-scripts/YankRing.vim'
@@ -137,12 +148,19 @@ NeoBundle 'tanabe/WriteJSDocComment.vim'
 " NeoBundle 'gregsexton/VimCalc'
 NeoBundle 'sjl/gundo.vim'
 NeoBundle 'mileszs/ack.vim'
+NeoBundle 'rking/ag.vim'
 NeoBundle 'tell-k/vim-browsereload-mac'
 NeoBundle 'jsx/jsx.vim'
 NeoBundle 'vim-scripts/zoom.vim'
 NeoBundle 'godlygeek/tabular'
 
 NeoBundle 'thinca/vim-showtime'
+NeoBundle 'thinca/vim-painter'
+NeoBundle 'osyo-manga/vim-sugarpot'
+NeoBundle 'kien/ctrlp.vim'
+NeoBundle 'leafgarland/typescript-vim'
+NeoBundle 'vim-ruby/vim-ruby'
+NeoBundle 'marijnh/tern_for_vim'
 
 autocmd FileType jsx compiler jsx
 
@@ -164,11 +182,12 @@ inoremap <expr> j getline('.')[col('.')-2] ==# 'j' ? "\<BS>\<ESC>" : 'j'
 "newline
 " nnoremap <CR> o<ESC>
 
+" js replace
+nnoremap <expr> ;jrb getline('.')[col('.')-1] ==# '.' ? "s['<Esc>ea']<Esc>F[" : "F.s['<Esc>ea']<Esc>F["
+nnoremap <expr> ;jrd getline('.')[col('.')-1] ==# '[' ? "2s.<Esc>f]h2xF." : "F[2s.<Esc>f]h2xF."
+
 ":only
 nnoremap <silent> ;o :<C-u>on<CR>
-
-"tab close
-" nnoremap <silent> ;tc :tabc<CR>
 
 "paste
 inoremap <silent> <C-p> <C-r>x
@@ -210,7 +229,7 @@ inoremap '' ''<LEFT>
 inoremap <> <><LEFT>
 
 "new tab
-nnoremap <silent> \t :<C-u>tabnew<CR>
+nnoremap <silent> ;nt :<C-u>tabnew<CR>
 nnoremap <silent> <D-T> :<C-u>tabnew<CR>
 
 "open to browser
@@ -246,10 +265,10 @@ nnoremap <silent> md md:'s,'dd<CR>
 nnoremap mr mr:'s,'rs///g<Left><Left><Left>
 
 "grep
-nnoremap ;gr :Ack<Space>
+nnoremap ;gr :Ag<Space>-a<Space>
 
 "replace
-nnoremap ;re :%s///g<Left><Left><Left>
+nnoremap ;re :%s///cg<Left><Left><Left><Left>
 
 "smart br
 inoremap <S-CR> <br<Space>/><CR>
@@ -289,13 +308,18 @@ nnoremap <silent> ;aa :0,FPPathAbs<CR>
 nnoremap <silent> ma ma:'s,'aFPPathAbs<CR>
 
 " sass-compile
+" let g:sass_compile_auto = 0
 let g:sass_compile_auto = 1
 let g:sass_compile_beforecmd = "growlnotify -t 'sass-compile.vim' -m 'start sass compile.'"
 let g:sass_compile_aftercmd = "growlnotify -t 'sass-compile.vim' -m ${sasscompileresult}"
 
 " auto-make
-let g:auto_make_file = ['js']
-let g:auto_make_update_ext = 'js'
+let g:auto_make_file = ['js', 'coffee']
+nnoremap <silent> ;mm :ManualMake<CR>
+
+" grunt-default
+" g:grunt_default_makefile = 'Gruntfile.js'
+" let g:grunt_default_file = ['js']
 
 " RetinaResize
 let g:RetinaResize_Comment = 0
@@ -310,8 +334,8 @@ nnoremap ;cm :CssSkeltonMono<CR>
 nnoremap ;cp :CssPaste<CR>
 
 " oop-js
-let g:oopjs_ignorecheckfile = ['test\.js', 'min\.js', 'combine\.js', 'lib\/.\+\.js', 'hybrid-app-library\/.\+\.js']
-let g:oopjs_autocheck = 1
+let g:oopjs_ignorecheckfile = ['test\.js', 'min\.js', 'combine\.js', 'lib\/.\+\.js', 'cir.js\/.\+\.js']
+" let g:oopjs_autocheck = 1
 let g:oopjs_linelimitnum = 50
 let g:oopjs_varlimitnum = 5
 let g:oopjs_dotlimitnum = 5
@@ -321,9 +345,16 @@ let g:oopjs_switchlimitnum = 1
 let g:oopjs_anonymousfunctionlimitnum = 5
 let g:oopjs_namedfunctionlimitnum = 5
 
+" koko
+nnoremap ;ko :KokoOpen<CR>
+
 " neobundle
 nnoremap ;nbi :NeoBundleInstall<CR>
 nnoremap ;nbu :NeoBundleInstall!<CR>
+
+" typescript
+" autocmd QuickFixCmdPost [^l]* nested cwindow
+" autocmd QuickFixCmdPost    l* nested lwindow
 
 " jscomplete
 autocmd FileType javascript
@@ -334,14 +365,18 @@ let g:jscomplete_use = ['dom', 'moz', 'xpcom', 'es6th']
 nnoremap <silent> ;gu :GundoToggle<CR>
 
 " syntastic
-command! STM SyntasticToggleMode
+" command! STM SyntasticToggleMode
+let g:syntastic_mode_map = { 'mode': 'active',
+                           \ 'active_filetypes': ['scss', 'sass', 'javascript'],
+                           \ 'passive_filetypes': ['html'] }
 " let g:syntastic_enable_signs = 1
 " let g:syntastic_auto_loc_list = 2
 " let g:syntastic_javascript_jslint_conf = "--white --undef --nomen --regexp --plusplus --bitwise --newcap --sloppy --vars"
 " let g:syntastic_javascript_gjslint_conf = "-nojsdoc --nosummary --unix_mode --nodebug_indentation --nobeep"
 
 " coffee-script
-au BufWritePost *.coffee CoffeeMake! -cb | cwindow | redraw!
+" au BufWritePost *.coffee CoffeeMake! -cb | cwindow | redraw!
+nnoremap <Leader>c :CoffeeCompile watch vert<CR>
 
 " quickrun
 " let g:quickrun_config = {}
@@ -369,6 +404,19 @@ function! s:javascript_filetype_settings()
 endfunction
 au BufRead *.js call s:javascript_filetype_settings()
 
+function! s:coffeescript_filetype_settings()
+  inoremap <buffer><expr> { smartchr#loop(' {',' { ','{')
+  inoremap <buffer><expr> : smartchr#loop(': ',':')
+  inoremap <buffer><expr> ! smartchr#loop('!',' != ')
+  inoremap <buffer><expr> = smartchr#loop(' = ',' == ','=')
+  inoremap <buffer><expr> + smartchr#loop(' + ',' += ','++','+')
+  inoremap <buffer><expr> ( smartchr#loop(' (','(')
+  inoremap <buffer> {} {}<LEFT>
+  inoremap <buffer> [] []<LEFT>
+  inoremap <buffer> () ()<LEFT>
+endfunction
+au BufRead *.coffee call s:coffeescript_filetype_settings()
+
 " css map
 function! s:css_filetype_settings()
   inoremap <buffer><expr> { smartchr#loop(' {',' { ','{')
@@ -392,7 +440,7 @@ au BufRead *.scss call s:css_filetype_settings()
 
 " zencoding
 " let g:use_zen_complete_tag = 1
-let g:user_zen_expandabbr_key = '<C-q>'
+let g:user_emmet_expandabbr_key = '<C-q>'
 
 " vimfiler
 let g:vimfiler_as_default_explorer=1
@@ -428,7 +476,7 @@ let g:neocomplcache_keyword_patterns['default'] = '\h\w*'
 
 " unite.vim
 " 入力モードで開始する
-let g:unite_enable_start_insert=1
+" let g:unite_enable_start_insert=1
 " ファイル一覧
 nnoremap <silent> ;uf :<C-u>UniteWithBufferDir -buffer-name=files file file/new<CR>
 " 常用セット
@@ -439,6 +487,10 @@ exec 'nnoremap <silent> ;uw :<C-u>Unite -input='.$WORKS.' file file/new<CR>'
 nnoremap <silent> ;ul :<C-u>Unite line<CR>
 
 imap <C-u> <Plug>(neocomplcache_start_unite_complete)
+
+" vimshell
+nnoremap <silent> ;t :topleft 10sp<CR>:VimShell<CR>
+nnoremap <silent> ;ct :topleft 10sp<CR>:VimShell .<CR>
 
 " indent-guide
 let g:indent_guides_enable_on_vim_startup = 1
