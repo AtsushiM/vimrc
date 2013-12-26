@@ -94,7 +94,9 @@ NeoBundle 'Shougo/vimproc', {
 " after install, turn shell ~/.vim/bundle/vimproc, (n,g)make -f your_machines_makefile
 NeoBundle 'Shougo/vimshell'
 NeoBundle 'Shougo/unite.vim'
-NeoBundle 'teramako/jscomplete-vim'
+
+" solarized カラースキーム
+NeoBundle 'altercation/vim-colors-solarized'
 
 " My Create plugin
 NeoBundle 'AtsushiM/simple-todo'
@@ -162,6 +164,9 @@ NeoBundle 'leafgarland/typescript-vim'
 NeoBundle 'vim-ruby/vim-ruby'
 NeoBundle 'marijnh/tern_for_vim'
 
+NeoBundle 'othree/eregex.vim'
+NeoBundle 'tpope/vim-fugitive'
+
 autocmd FileType jsx compiler jsx
 
 " Alignta
@@ -169,7 +174,7 @@ autocmd FileType jsx compiler jsx
 
 filetype plugin indent on " required!
 
-nnoremap <F3> :e /Applications/XAMPP/xamppfiles/etc/extra/httpd-vhosts.conf<CR>
+nnoremap <F3> :e /etc/apache2/extra/httpd-vhosts.conf<CR>
 nnoremap <F4> :e ~/.vim/vimrc/vimrc<CR>
 nnoremap <F5> :source %<CR>
 
@@ -185,6 +190,9 @@ inoremap <expr> j getline('.')[col('.')-2] ==# 'j' ? "\<BS>\<ESC>" : 'j'
 " js replace
 nnoremap <expr> ;jrb getline('.')[col('.')-1] ==# '.' ? "s['<Esc>ea']<Esc>F[" : "F.s['<Esc>ea']<Esc>F["
 nnoremap <expr> ;jrd getline('.')[col('.')-1] ==# '[' ? "2s.<Esc>f]h2xF." : "F[2s.<Esc>f]h2xF."
+
+"vertical vimdiff
+nnoremap ;;d :vertical<Space>diffsplit<Space>
 
 ":only
 nnoremap <silent> ;o :<C-u>on<CR>
@@ -232,12 +240,23 @@ inoremap <> <><LEFT>
 nnoremap <silent> ;nt :<C-u>tabnew<CR>
 nnoremap <silent> <D-T> :<C-u>tabnew<CR>
 
+"replication tab
+nnoremap <silent> ;rt :<C-u>call ReplicationTab()<CR>
+
+function! ReplicationTab()
+  let filepath = expand('%')  
+  execute 'tabf '.filepath
+endfunction
+
 "open to browser
 nnoremap <silent> <leader>w :silent ! open %<CR>
 
 "move tab
 nnoremap gh gT
 nnoremap gl gt
+
+"move tab most left
+nnoremap <silent> ;lt :<C-u>tabm 0<CR>
 
 "Search
 nnoremap n nzz
@@ -268,7 +287,7 @@ nnoremap mr mr:'s,'rs///g<Left><Left><Left>
 nnoremap ;gr :Ag<Space>-a<Space>
 
 "replace
-nnoremap ;re :%s///cg<Left><Left><Left><Left>
+nnoremap ;re :%S///cg<Left><Left><Left><Left>
 
 "smart br
 inoremap <S-CR> <br<Space>/><CR>
@@ -356,23 +375,18 @@ nnoremap ;nbu :NeoBundleInstall!<CR>
 " autocmd QuickFixCmdPost [^l]* nested cwindow
 " autocmd QuickFixCmdPost    l* nested lwindow
 
-" jscomplete
-autocmd FileType javascript
-  \ :setl omnifunc=jscomplete#CompleteJS
-let g:jscomplete_use = ['dom', 'moz', 'xpcom', 'es6th']
-
 " gundo
 nnoremap <silent> ;gu :GundoToggle<CR>
 
 " syntastic
 " command! STM SyntasticToggleMode
 let g:syntastic_mode_map = { 'mode': 'active',
-                           \ 'active_filetypes': ['scss', 'sass', 'javascript'],
+                           " \ 'active_filetypes': ['scss', 'sass', 'javascript'],
                            \ 'passive_filetypes': ['html'] }
-" let g:syntastic_enable_signs = 1
-" let g:syntastic_auto_loc_list = 2
-" let g:syntastic_javascript_jslint_conf = "--white --undef --nomen --regexp --plusplus --bitwise --newcap --sloppy --vars"
-" let g:syntastic_javascript_gjslint_conf = "-nojsdoc --nosummary --unix_mode --nodebug_indentation --nobeep"
+let g:syntastic_enable_signs = 1
+let g:syntastic_auto_loc_list = 2
+let g:syntastic_javascript_jslint_conf = "--white --undef --nomen --regexp --plusplus --bitwise --newcap --sloppy --vars"
+let g:syntastic_javascript_gjslint_conf = "-nojsdoc --nosummary --unix_mode --nodebug_indentation --nobeep"
 
 " coffee-script
 " au BufWritePost *.coffee CoffeeMake! -cb | cwindow | redraw!
@@ -447,6 +461,7 @@ let g:vimfiler_as_default_explorer=1
 let g:vimfiler_safe_mode_by_default=0
 
 nnoremap <silent> ;e :VimFiler<CR>
+nnoremap <silent> ;ce :VimFilerBufferDir<CR>
 
 " neocomplcache
 " Use neocomplcache.
@@ -474,9 +489,40 @@ if !exists('g:neocomplcache_keyword_patterns')
 endif
 let g:neocomplcache_keyword_patterns['default'] = '\h\w*'
 
+" fugitive
+" set statusline=%<%f\ %h%m%r%{fugitive#statusline()}%=%-14.(%l,%c%V%)\ %P
+" ステータスラインの表示
+  set statusline=%<     " 行が長すぎるときに切り詰める位置
+  set statusline+=[%n]  " バッファ番号
+  set statusline+=%m    " %m 修正フラグ
+  set statusline+=%r    " %r 読み込み専用フラグ
+  set statusline+=%h    " %h ヘルプバッファフラグ
+  set statusline+=%w    " %w プレビューウィンドウフラグ
+  set statusline+=%{'['.(&fenc!=''?&fenc:&enc).':'.&ff.']'}  " fencとffを表示
+  set statusline+=%y    " バッファ内のファイルのタイプ
+  set statusline+=\     " 空白スペース
+if winwidth(0) >= 130
+  set statusline+=%F    " バッファ内のファイルのフルパス
+else
+  set statusline+=%t    " ファイル名のみ
+endif
+  set statusline+=%=    " 左寄せ項目と右寄せ項目の区切り
+  set statusline+=%1l   " 何行目にカーソルがあるか
+  set statusline+=/
+  set statusline+=%L    " バッファ内の総行数
+  set statusline+=\   " 空白スペース2個
+  set statusline+=%c    " 何列目にカーソルがあるか
+  set statusline+=%V    " 画面上の何列目にカーソルがあるか
+  set statusline+=\   " 空白スペース2個
+  set statusline+=%{fugitive#statusline()}  " Gitのブランチ名を表示
+
 " unite.vim
 " 入力モードで開始する
 " let g:unite_enable_start_insert=1
+
+" mru表示件数
+let g:unite_source_file_mru_limit = 500
+
 " ファイル一覧
 nnoremap <silent> ;uf :<C-u>UniteWithBufferDir -buffer-name=files file file/new<CR>
 " 常用セット
@@ -491,6 +537,10 @@ imap <C-u> <Plug>(neocomplcache_start_unite_complete)
 " vimshell
 nnoremap <silent> ;t :topleft 10sp<CR>:VimShell<CR>
 nnoremap <silent> ;ct :topleft 10sp<CR>:VimShell .<CR>
+
+" eregex
+" nnoremap <leader>/ :call eregex#toggle()<CR>
+let g:eregex_default_enable = 0
 
 " indent-guide
 let g:indent_guides_enable_on_vim_startup = 1
