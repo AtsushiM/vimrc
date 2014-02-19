@@ -53,7 +53,7 @@ au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g
 au BufEnter * set formatoptions-=ro
 
 " 保存時行末の空白を除去
-" au BufWritePre * :%s/\s\+$//ge
+au BufWritePre * :%s/\s\+$//ge
 "
 " " 保存時tabを4スペースに変換
 " au BufWritePre *.* :%s/\t/    /ge
@@ -110,7 +110,7 @@ NeoBundle 'AtsushiM/css-minifier.vim'
 NeoBundle 'AtsushiM/total-minifier.vim'
 NeoBundle 'AtsushiM/auto-make.vim'
 NeoBundle 'AtsushiM/grunt-default.vim'
-NeoBundle 'AtsushiM/coffee-cake.vim'
+" NeoBundle 'AtsushiM/coffee-cake.vim'
 NeoBundle 'AtsushiM/sass-compile.vim'
 NeoBundle 'AtsushiM/get-gitrepo.vim'
 NeoBundle 'AtsushiM/findpath.vim'
@@ -127,9 +127,10 @@ NeoBundle 'AtsushiM/koko.vim'
 
 " My Bundles here:
 NeoBundle 'Shougo/neocomplcache'
+NeoBundle 'Shougo/neomru.vim'
 " NeoBundle 'Shougo/neosnippet'
 NeoBundle 'Shougo/vimfiler'
-NeoBundle 'kchmck/vim-coffee-script'
+" NeoBundle 'kchmck/vim-coffee-script'
 NeoBundle 'othree/html5.vim'
 " NeoBundle 'hokaccha/vim-html5validator'
 NeoBundle 'thinca/vim-qfreplace'
@@ -244,7 +245,7 @@ nnoremap <silent> <D-T> :<C-u>tabnew<CR>
 nnoremap <silent> ;rt :<C-u>call ReplicationTab()<CR>
 
 function! ReplicationTab()
-  let filepath = expand('%')  
+  let filepath = expand('%')
   execute 'tabf '.filepath
 endfunction
 
@@ -284,10 +285,10 @@ nnoremap <silent> md md:'s,'dd<CR>
 nnoremap mr mr:'s,'rs///g<Left><Left><Left>
 
 "grep
-nnoremap ;gr :Ag<Space>-a<Space>
+nnoremap ;gr :Ag<Space>-a<Space>-S<Space>
 
 "replace
-nnoremap ;re :%S///cg<Left><Left><Left><Left>
+nnoremap ;re :%S///cgI<Left><Left><Left><Left><Left>
 
 "smart br
 inoremap <S-CR> <br<Space>/><CR>
@@ -380,17 +381,17 @@ nnoremap <silent> ;gu :GundoToggle<CR>
 
 " syntastic
 " command! STM SyntasticToggleMode
-let g:syntastic_mode_map = { 'mode': 'active',
-                           " \ 'active_filetypes': ['scss', 'sass', 'javascript'],
-                           \ 'passive_filetypes': ['html'] }
-let g:syntastic_enable_signs = 1
-let g:syntastic_auto_loc_list = 2
-let g:syntastic_javascript_jslint_conf = "--white --undef --nomen --regexp --plusplus --bitwise --newcap --sloppy --vars"
-let g:syntastic_javascript_gjslint_conf = "-nojsdoc --nosummary --unix_mode --nodebug_indentation --nobeep"
+" let g:syntastic_mode_map = { 'mode': 'active',
+"                            " \ 'active_filetypes': ['scss', 'sass', 'javascript'],
+"                            \ 'passive_filetypes': ['html'] }
+" let g:syntastic_enable_signs = 1
+" let g:syntastic_auto_loc_list = 2
+" let g:syntastic_javascript_jslint_conf = "--white --undef --nomen --regexp --plusplus --bitwise --newcap --sloppy --vars"
+" let g:syntastic_javascript_gjslint_conf = "-nojsdoc --nosummary --unix_mode --nodebug_indentation --nobeep"
 
-" coffee-script
-" au BufWritePost *.coffee CoffeeMake! -cb | cwindow | redraw!
-nnoremap <Leader>c :CoffeeCompile watch vert<CR>
+" " coffee-script
+" " au BufWritePost *.coffee CoffeeMake! -cb | cwindow | redraw!
+" nnoremap <Leader>c :CoffeeCompile watch vert<CR>
 
 " quickrun
 " let g:quickrun_config = {}
@@ -404,7 +405,7 @@ nnoremap <silent> ;cc :ChromeReload<CR>
 
 " smartchr
 " js map
-function! s:javascript_filetype_settings()
+function! s:script_filetype_settings()
   inoremap <buffer><expr> { smartchr#loop(' {',' { ','{')
   inoremap <buffer><expr> : smartchr#loop(': ',':')
   inoremap <buffer><expr> ! smartchr#loop('!',' !== ')
@@ -416,19 +417,8 @@ function! s:javascript_filetype_settings()
   inoremap <buffer> [] []<LEFT>
   inoremap <buffer> () ()<LEFT>
 endfunction
-au BufRead *.js call s:javascript_filetype_settings()
-
-function! s:coffeescript_filetype_settings()
-  inoremap <buffer><expr> { smartchr#loop(' {',' { ','{')
-  inoremap <buffer><expr> : smartchr#loop(': ',':')
-  inoremap <buffer><expr> ! smartchr#loop('!',' != ')
-  inoremap <buffer><expr> = smartchr#loop(' = ',' == ','=')
-  inoremap <buffer><expr> + smartchr#loop(' + ',' += ','++','+')
-  inoremap <buffer><expr> ( smartchr#loop(' (','(')
-  inoremap <buffer> {} {}<LEFT>
-  inoremap <buffer> [] []<LEFT>
-  inoremap <buffer> () ()<LEFT>
-endfunction
+au BufRead *.php call s:script_filetype_settings()
+au BufRead *.js call s:script_filetype_settings()
 au BufRead *.coffee call s:coffeescript_filetype_settings()
 
 " css map
