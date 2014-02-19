@@ -7,4 +7,4 @@ set background=dark
 colorscheme solarized
 
 set showtabline=2
-set transparency=5
+set transparency=7
