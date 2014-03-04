@@ -1,3 +1,5 @@
+let $PATH=$PATH.":/Users/atsushi_mizoue/.rbenv/shims:/Users/atsushi_mizoue/.nvm/v0.10.21/bin"
+
 set cindent
 set ignorecase
 set smartcase
@@ -59,10 +61,10 @@ au BufWritePre * :%s/\s\+$//ge
 " au BufWritePre *.* :%s/\t/    /ge
 
 " vimの多重起動禁止
-runtime macros/editexisting.vim
+" runtime macros/editexisting.vim
 
 " パスワードなどを読み込み
-source ~/.vim/vimrc_secret.vim
+" source ~/.vim/vimrc_secret.vim
 
 augroup InsModeAu
     autocmd!
@@ -76,10 +78,10 @@ filetype plugin indent off " required!
 
 if has('vim_starting')
     set runtimepath+=~/.vim/bundle/neobundle.vim/
-    call neobundle#rc(expand('~/.vim/bundle/'))
 endif
+call neobundle#rc(expand('~/.vim/bundle/'))
 
-let NeoBundle manage NeoBundle
+" let NeoBundle manage NeoBundle
 " required!
 NeoBundle 'Shougo/neobundle.vim'
 " recommended to install
@@ -99,6 +101,8 @@ NeoBundle 'Shougo/unite.vim'
 NeoBundle 'altercation/vim-colors-solarized'
 
 " My Create plugin
+NeoBundle 'AtsushiM/thread.vim'
+NeoBundle 'AtsushiM/search-parent.vim'
 NeoBundle 'AtsushiM/simple-todo'
 NeoBundle 'AtsushiM/simple-memo'
 " NeoBundle 'AtsushiM/simple-bookmark'
@@ -121,7 +125,7 @@ NeoBundle 'AtsushiM/Vake.vim'
 NeoBundle 'AtsushiM/goodbye-jquery.vim'
 NeoBundle 'AtsushiM/image2base64.vim'
 " NeoBundle 'AtsushiM/haml-compiler.vim'
-NeoBundle 'AtsushiM/jasmine-helper.vim'
+" NeoBundle 'AtsushiM/jasmine-helper.vim'
 NeoBundle 'AtsushiM/oop-js.vim'
 NeoBundle 'AtsushiM/koko.vim'
 
@@ -167,6 +171,8 @@ NeoBundle 'marijnh/tern_for_vim'
 
 NeoBundle 'othree/eregex.vim'
 NeoBundle 'tpope/vim-fugitive'
+NeoBundle 'AtsushiM/koko.vim'
+NeoBundle 'AtsushiM/today-first.vim'
 
 autocmd FileType jsx compiler jsx
 
@@ -178,6 +184,9 @@ filetype plugin indent on " required!
 nnoremap <F3> :e /etc/apache2/extra/httpd-vhosts.conf<CR>
 nnoremap <F4> :e ~/.vim/vimrc/vimrc<CR>
 nnoremap <F5> :source %<CR>
+
+" messages
+command! ClearMessages for i in range(200)| echom ''| endfor
 
 "jjでESC
 inoremap <expr> j getline('.')[col('.')-2] ==# 'j' ? "\<BS>\<ESC>" : 'j'
@@ -370,7 +379,7 @@ nnoremap ;ko :KokoOpen<CR>
 
 " neobundle
 nnoremap ;nbi :NeoBundleInstall<CR>
-nnoremap ;nbu :NeoBundleInstall!<CR>
+nnoremap ;nbu :NeoBundleUpdate<CR>
 
 " typescript
 " autocmd QuickFixCmdPost [^l]* nested cwindow
@@ -607,3 +616,20 @@ function! CSS3PropertyDuplicate()
   let @@ = reg_save
 endfunction
 nnoremap ,3 :<C-u>call CSS3PropertyDuplicate()<CR>
+
+function! URICheck(uri)
+  return escape(matchstr(a:uri, '[a-z]*:\/\/[^ >,;:]*'), '#')
+endfunction
+
+function! BrowseURI()
+  let uri = smemo#URICheck(getline("."))
+  if uri != ""
+    call system("! open " . uri)
+  else
+    echo "No URI found in line."
+  endif
+endfunction
+
+nnoremap <buffer><silent> ;b :call BrowseURI()<CR>
+
+autocmd VimEnter,CursorHold,CursorHoldI * TodayFirstCmd
