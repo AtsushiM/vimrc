@@ -630,6 +630,6 @@ function! BrowseURI()
   endif
 endfunction
 
-nnoremap <buffer><silent> ;b :call BrowseURI()<CR>
+nnoremap <silent> ;b :call BrowseURI()<CR>
 
-autocmd VimEnter,CursorHold,CursorHoldI * TodayFirstCmd
+autocmd VimEnter * TodayFirstCmd
