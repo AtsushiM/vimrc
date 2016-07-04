@@ -27,6 +27,11 @@ set nobackup
 set noswapfile
 set visualbell t_vb=
 
+augroup fileTypeIndent
+  autocmd!
+  autocmd BufNewFile,BufRead *.rb setlocal tabstop=2 softtabstop=2 shiftwidth=2
+augroup END
+
 " コマンドモードの補完で大文字小文字を無視
 set wildignorecase
 set wildmode=list:full
@@ -73,17 +78,19 @@ augroup InsModeAu
 augroup END
 
 set nocompatible " be iMproved
-
 filetype plugin indent off " required!
 
 if has('vim_starting')
-    set runtimepath+=~/.vim/bundle/neobundle.vim/
+    " set runtimepath+=$HOME/.vim/bundle/neobundle.vim/
+    set rtp+=$HOME/.vim/bundle/neobundle.vim/
 endif
-call neobundle#rc(expand('~/.vim/bundle/'))
+" call neobundle#rc(expand('~/.vim/bundle/'))
+call neobundle#begin(expand('~/.vim/bundle/'))
+NEoBundleFetch 'Shougo/neobundle.vim'
+call neobundle#end()
 
 " let NeoBundle manage NeoBundle
 " required!
-NeoBundle 'Shougo/neobundle.vim'
 " recommended to install
 NeoBundle 'Shougo/vimproc', {
 \ 'build': {
@@ -168,18 +175,22 @@ NeoBundle 'kien/ctrlp.vim'
 NeoBundle 'leafgarland/typescript-vim'
 NeoBundle 'vim-ruby/vim-ruby'
 NeoBundle 'marijnh/tern_for_vim'
+NeoBundle 'derekwyatt/vim-scala'
 
 NeoBundle 'othree/eregex.vim'
 NeoBundle 'tpope/vim-fugitive'
 NeoBundle 'AtsushiM/koko.vim'
 NeoBundle 'AtsushiM/today-first.vim'
 
+filetype plugin indent on " required!
+
 autocmd FileType jsx compiler jsx
 
 " Alignta
 " textmanip
 
-filetype plugin indent on " required!
+" Vim起動時に実行
+" autocmd VimEnter * TodayFirstCmd
 
 nnoremap <F3> :e /etc/apache2/extra/httpd-vhosts.conf<CR>
 nnoremap <F4> :e ~/.vim/vimrc/vimrc<CR>
@@ -188,14 +199,18 @@ nnoremap <F5> :source %<CR>
 " messages
 command! ClearMessages for i in range(200)| echom ''| endfor
 
-"jjでESC
+" jjでESC
 inoremap <expr> j getline('.')[col('.')-2] ==# 'j' ? "\<BS>\<ESC>" : 'j'
 
 " 自殺コマンド
 " command! Suicide call system('kill -KILL '. getpid())
 
-"newline
+" newline
 " nnoremap <CR> o<ESC>
+
+" １ファイルのみのブックマーク
+nnoremap <silent> ;fr :let ONEFILECTRL_FILEPATH = expand('%:p')<CR>:echo "bookmark ".expand('%:p')<CR>
+nnoremap <silent> ;fo :execute("e ".ONEFILECTRL_FILEPATH)<CR>
 
 " js replace
 nnoremap <expr> ;jrb getline('.')[col('.')-1] ==# '.' ? "s['<Esc>ea']<Esc>F[" : "F.s['<Esc>ea']<Esc>F["
@@ -206,6 +221,8 @@ nnoremap ;;d :vertical<Space>diffsplit<Space>
 
 ":only
 nnoremap <silent> ;o :<C-u>on<CR>
+":tabonly
+nnoremap <silent> ;to :<C-u>tabonly<CR>
 
 "paste
 inoremap <silent> <C-p> <C-r>x
@@ -296,6 +313,9 @@ nnoremap mr mr:'s,'rs///g<Left><Left><Left>
 "grep
 nnoremap ;gr :Ag<Space>-a<Space>-S<Space>
 
+"ack.vim
+let g:ack_autofold_results = 0
+
 "replace
 nnoremap ;re :%S///cgI<Left><Left><Left><Left><Left>
 
@@ -320,6 +340,9 @@ nnoremap <Esc><Esc> :nohlsearch<CR>
 " <,>による連続インデント
 vnoremap < <gv
 vnoremap > >gv
+
+" バッファを全展開
+nnoremap ;tb :tab ba<CR>
 
 " simple-plugins
 " ToDo機能を開く
@@ -388,15 +411,15 @@ nnoremap ;nbu :NeoBundleUpdate<CR>
 " gundo
 nnoremap <silent> ;gu :GundoToggle<CR>
 
-" syntastic
-" command! STM SyntasticToggleMode
-" let g:syntastic_mode_map = { 'mode': 'active',
-"                            " \ 'active_filetypes': ['scss', 'sass', 'javascript'],
-"                            \ 'passive_filetypes': ['html'] }
-" let g:syntastic_enable_signs = 1
-" let g:syntastic_auto_loc_list = 2
-" let g:syntastic_javascript_jslint_conf = "--white --undef --nomen --regexp --plusplus --bitwise --newcap --sloppy --vars"
-" let g:syntastic_javascript_gjslint_conf = "-nojsdoc --nosummary --unix_mode --nodebug_indentation --nobeep"
+syntastic
+command! STM SyntasticToggleMode
+let g:syntastic_mode_map = { 'mode': 'active',
+                           " \ 'active_filetypes': ['scss', 'sass', 'javascript', 'php'],
+                           \ 'passive_filetypes': ['html'] }
+let g:syntastic_enable_signs = 1
+let g:syntastic_auto_loc_list = 2
+let g:syntastic_javascript_jslint_conf = "--white --undef --nomen --regexp --plusplus --bitwise --newcap --sloppy --vars"
+let g:syntastic_javascript_gjslint_conf = "-nojsdoc --nosummary --unix_mode --nodebug_indentation --nobeep"
 
 " " coffee-script
 " " au BufWritePost *.coffee CoffeeMake! -cb | cwindow | redraw!
@@ -631,5 +654,3 @@ function! BrowseURI()
 endfunction
 
 nnoremap <silent> ;b :call BrowseURI()<CR>
-
-autocmd VimEnter * TodayFirstCmd
