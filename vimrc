@@ -3,7 +3,7 @@ let $PATH=$PATH.":/Users/atsushi_mizoue/.rbenv/shims:/Users/atsushi_mizoue/.nvm/
 set cindent
 set ignorecase
 set smartcase
-set tabstop=4
+set tabstop=2
 set expandtab
 set autoindent
 set backspace=2
@@ -11,8 +11,8 @@ set wrapscan
 set showmatch
 set wildmenu
 set formatoptions+=mM
-set softtabstop=4
-set shiftwidth=4
+set softtabstop=2
+set shiftwidth=2
 au FileType html set indentexpr&
 au FileType xhtml set indentexpr&
 set number
@@ -77,114 +77,97 @@ augroup InsModeAu
     autocmd InsertLeave,CmdwinLeave * set imdisable
 augroup END
 
-set nocompatible " be iMproved
-filetype plugin indent off " required!
+" Specify a directory for plugins
+" - For Neovim: ~/.local/share/nvim/plugged
+" - Avoid using standard Vim directory names like 'plugin'
+call plug#begin('~/.vim/plugged')
 
-if has('vim_starting')
-    " set runtimepath+=$HOME/.vim/bundle/neobundle.vim/
-    set rtp+=$HOME/.vim/bundle/neobundle.vim/
-endif
-" call neobundle#rc(expand('~/.vim/bundle/'))
-call neobundle#begin(expand('~/.vim/bundle/'))
-NEoBundleFetch 'Shougo/neobundle.vim'
-call neobundle#end()
-
-" let NeoBundle manage NeoBundle
-" required!
-" recommended to install
-NeoBundle 'Shougo/vimproc', {
-\ 'build': {
-\ 'windows': 'make -f make_mingw32.mak',
-\ 'cygwin': 'make -f make_cygwin.mak',
-\ 'mac': 'make -f make_mac.mak',
-\ 'unix': 'make -f make_unix.mak',
-\ }
-\}
-" after install, turn shell ~/.vim/bundle/vimproc, (n,g)make -f your_machines_makefile
-NeoBundle 'Shougo/vimshell'
-NeoBundle 'Shougo/unite.vim'
+Plug 'Shougo/vimshell'
+Plug 'Shougo/unite.vim'
 
 " solarized カラースキーム
-NeoBundle 'altercation/vim-colors-solarized'
+Plug 'altercation/vim-colors-solarized'
 
 " My Create plugin
-NeoBundle 'AtsushiM/thread.vim'
-NeoBundle 'AtsushiM/search-parent.vim'
-NeoBundle 'AtsushiM/simple-todo'
-NeoBundle 'AtsushiM/simple-memo'
-" NeoBundle 'AtsushiM/simple-bookmark'
-" NeoBundle 'AtsushiM/simple-download'
-NeoBundle 'AtsushiM/css-skelton.vim'
-NeoBundle 'AtsushiM/RetinaResize'
-NeoBundle 'AtsushiM/html-minifier.vim'
-NeoBundle 'AtsushiM/css-minifier.vim'
-NeoBundle 'AtsushiM/total-minifier.vim'
-NeoBundle 'AtsushiM/auto-make.vim'
-NeoBundle 'AtsushiM/grunt-default.vim'
-" NeoBundle 'AtsushiM/coffee-cake.vim'
-NeoBundle 'AtsushiM/sass-compile.vim'
-NeoBundle 'AtsushiM/get-gitrepo.vim'
-NeoBundle 'AtsushiM/findpath.vim'
-NeoBundle 'AtsushiM/findpath-edit.vim'
-NeoBundle 'AtsushiM/findpath-absolute.vim'
-NeoBundle 'AtsushiM/Vake.vim'
+Plug 'AtsushiM/thread.vim'
+Plug 'AtsushiM/search-parent.vim'
+Plug 'AtsushiM/simple-todo'
+Plug 'AtsushiM/simple-memo'
+" Plug 'AtsushiM/simple-bookmark'
+" Plug 'AtsushiM/simple-download'
+Plug 'AtsushiM/css-skelton.vim'
+Plug 'AtsushiM/RetinaResize'
+Plug 'AtsushiM/html-minifier.vim'
+Plug 'AtsushiM/css-minifier.vim'
+Plug 'AtsushiM/total-minifier.vim'
+Plug 'AtsushiM/auto-make.vim'
+Plug 'AtsushiM/grunt-default.vim'
+" Plug 'AtsushiM/coffee-cake.vim'
+Plug 'AtsushiM/sass-compile.vim'
+Plug 'AtsushiM/get-gitrepo.vim'
+Plug 'AtsushiM/findpath.vim'
+Plug 'AtsushiM/findpath-edit.vim'
+Plug 'AtsushiM/findpath-absolute.vim'
+Plug 'AtsushiM/Vake.vim'
 
-NeoBundle 'AtsushiM/goodbye-jquery.vim'
-NeoBundle 'AtsushiM/image2base64.vim'
-" NeoBundle 'AtsushiM/haml-compiler.vim'
-" NeoBundle 'AtsushiM/jasmine-helper.vim'
-NeoBundle 'AtsushiM/oop-js.vim'
-NeoBundle 'AtsushiM/koko.vim'
+Plug 'AtsushiM/goodbye-jquery.vim'
+Plug 'AtsushiM/image2base64.vim'
+" Plug 'AtsushiM/haml-compiler.vim'
+" Plug 'AtsushiM/jasmine-helper.vim'
+Plug 'AtsushiM/oop-js.vim'
+Plug 'AtsushiM/koko.vim'
 
 " My Bundles here:
-NeoBundle 'Shougo/neocomplcache'
-NeoBundle 'Shougo/neomru.vim'
-" NeoBundle 'Shougo/neosnippet'
-NeoBundle 'Shougo/vimfiler'
-" NeoBundle 'kchmck/vim-coffee-script'
-NeoBundle 'othree/html5.vim'
-" NeoBundle 'hokaccha/vim-html5validator'
-NeoBundle 'thinca/vim-qfreplace'
-" NeoBundle 'thinca/vim-quickrun'
-" NeoBundle 'tpope/vim-repeat'
-NeoBundle 'tpope/vim-surround'
-NeoBundle 'vim-scripts/tComment'
-NeoBundle 'kana/vim-smartchr'
-" NeoBundle 'mattn/zencoding-vim'
-NeoBundle 'mattn/emmet-vim'
-" NeoBundle 'Lokaltog/vim-powerline'
-" NeoBundle 'mattn/gist-vim'
-" NeoBundle 'vim-scripts/YankRing.vim'
-NeoBundle 'nathanaelkane/vim-indent-guides'
-NeoBundle 'scrooloose/syntastic'
-" NeoBundle 'banyan/Vimpusher'
-NeoBundle 'tanabe/WriteJSDocComment.vim'
-" NeoBundle 'gregsexton/VimCalc'
-NeoBundle 'sjl/gundo.vim'
-NeoBundle 'mileszs/ack.vim'
-NeoBundle 'rking/ag.vim'
-NeoBundle 'tell-k/vim-browsereload-mac'
-NeoBundle 'jsx/jsx.vim'
-NeoBundle 'vim-scripts/zoom.vim'
-NeoBundle 'godlygeek/tabular'
+Plug 'Shougo/neocomplcache'
+Plug 'Shougo/neomru.vim'
+" Plug 'Shougo/neosnippet'
+Plug 'Shougo/vimfiler'
+" Plug 'kchmck/vim-coffee-script'
+Plug 'othree/html5.vim'
+" Plug 'hokaccha/vim-html5validator'
+Plug 'thinca/vim-qfreplace'
+" Plug 'thinca/vim-quickrun'
+" Plug 'tpope/vim-repeat'
+Plug 'tpope/vim-surround'
+Plug 'vim-scripts/tComment'
+Plug 'kana/vim-smartchr'
+" Plug 'mattn/zencoding-vim'
+Plug 'mattn/emmet-vim'
+" Plug 'Lokaltog/vim-powerline'
+" Plug 'mattn/gist-vim'
+" Plug 'vim-scripts/YankRing.vim'
+Plug 'nathanaelkane/vim-indent-guides'
+Plug 'scrooloose/syntastic'
+" Plug 'banyan/Vimpusher'
+Plug 'tanabe/WriteJSDocComment.vim'
+" Plug 'gregsexton/VimCalc'
+Plug 'sjl/gundo.vim'
+Plug 'mileszs/ack.vim'
+Plug 'rking/ag.vim'
+Plug 'tell-k/vim-browsereload-mac'
+Plug 'jsx/jsx.vim'
+Plug 'vim-scripts/zoom.vim'
+Plug 'godlygeek/tabular'
 
-NeoBundle 'thinca/vim-showtime'
-NeoBundle 'thinca/vim-painter'
-NeoBundle 'osyo-manga/vim-sugarpot'
-NeoBundle 'kien/ctrlp.vim'
-NeoBundle 'leafgarland/typescript-vim'
-NeoBundle 'vim-ruby/vim-ruby'
-NeoBundle 'marijnh/tern_for_vim'
-NeoBundle 'derekwyatt/vim-scala'
+Plug 'thinca/vim-showtime'
+Plug 'thinca/vim-painter'
+Plug 'osyo-manga/vim-sugarpot'
+Plug 'kien/ctrlp.vim'
+Plug 'leafgarland/typescript-vim'
+Plug 'vim-ruby/vim-ruby'
+Plug 'marijnh/tern_for_vim'
+Plug 'derekwyatt/vim-scala'
 
-NeoBundle 'othree/eregex.vim'
-NeoBundle 'tpope/vim-fugitive'
-NeoBundle 'AtsushiM/koko.vim'
-NeoBundle 'AtsushiM/today-first.vim'
+Plug 'othree/eregex.vim'
+Plug 'tpope/vim-fugitive'
+Plug 'AtsushiM/koko.vim'
+Plug 'AtsushiM/today-first.vim'
 
-filetype plugin indent on " required!
+" Initialize plugin system
+call plug#end()
 
 autocmd FileType jsx compiler jsx
+autocmd FileType tsx compiler tsx
 
 " Alignta
 " textmanip
@@ -193,7 +176,7 @@ autocmd FileType jsx compiler jsx
 " autocmd VimEnter * TodayFirstCmd
 
 nnoremap <F3> :e /etc/apache2/extra/httpd-vhosts.conf<CR>
-nnoremap <F4> :e ~/.vim/vimrc/vimrc<CR>
+nnoremap <F4> :e ~/.vim/.vimrc<CR>
 nnoremap <F5> :source %<CR>
 
 " messages
@@ -366,7 +349,7 @@ let g:sass_compile_beforecmd = "growlnotify -t 'sass-compile.vim' -m 'start sass
 let g:sass_compile_aftercmd = "growlnotify -t 'sass-compile.vim' -m ${sasscompileresult}"
 
 " auto-make
-let g:auto_make_file = ['js', 'coffee']
+let g:auto_make_file = ['js']
 nnoremap <silent> ;mm :ManualMake<CR>
 
 " grunt-default
@@ -401,8 +384,8 @@ let g:oopjs_namedfunctionlimitnum = 5
 nnoremap ;ko :KokoOpen<CR>
 
 " neobundle
-nnoremap ;nbi :NeoBundleInstall<CR>
-nnoremap ;nbu :NeoBundleUpdate<CR>
+nnoremap ;pi :PlugInstall<CR>
+nnoremap ;pu :PlugUpdate<CR>
 
 " typescript
 " autocmd QuickFixCmdPost [^l]* nested cwindow
@@ -451,7 +434,9 @@ function! s:script_filetype_settings()
 endfunction
 au BufRead *.php call s:script_filetype_settings()
 au BufRead *.js call s:script_filetype_settings()
-au BufRead *.coffee call s:coffeescript_filetype_settings()
+au BufRead *.jsx call s:script_filetype_settings()
+au BufRead *.ts call s:script_filetype_settings()
+au BufRead *.tsx call s:script_filetype_settings()
 
 " css map
 function! s:css_filetype_settings()
