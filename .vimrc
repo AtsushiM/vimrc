@@ -521,7 +521,10 @@ if g:use_fzf && executable('fzf')
   let g:fzf_preview_window = ['right:50%', 'ctrl-/']
 
   " レイアウト
-  let g:fzf_layout = { 'down': '40%' }
+  let g:fzf_layout = { 'up': '40%' }
+
+  " 検索バーを上部に表示
+  let $FZF_DEFAULT_OPTS = '--layout=reverse'
 
   " カラースキームに合わせる
   let g:fzf_colors =
