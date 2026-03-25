@@ -551,15 +551,23 @@ if g:use_fzf && executable('fzf')
   endif
 
   " カレントディレクトリ直下のみ検索（再帰なし、ディレクトリ選択でcd）
+  " カレントディレクトリ直下のみ検索（ディレクトリブラウザ）
   command! FilesCurrentDir call s:fzf_dir_browser('.')
 
-  " Worksディレクトリ直下のみ検索（再帰なし、ディレクトリ選択でcd）
+  " Worksディレクトリ直下のみ検索（ディレクトリブラウザ、..で親移動可能）
   exec 'command! FilesWorksDir call s:fzf_dir_browser("'.$WORKS.'")'
 
   " ディレクトリブラウザ機能
   function! s:fzf_dir_browser(dir)
     let l:dir = expand(a:dir)
+    " 相対パスの場合は絶対パスに変換
+    if l:dir !~ '^/'
+      let l:dir = getcwd() . '/' . l:dir
+    endif
     " 末尾のスラッシュを削除
+    let l:dir = substitute(l:dir, '/$', '', '')
+    " パスを正規化
+    let l:dir = fnamemodify(l:dir, ':p')
     let l:dir = substitute(l:dir, '/$', '', '')
 
     " ソースコマンドを構築
@@ -567,7 +575,7 @@ if g:use_fzf && executable('fzf')
     let l:items = []
 
     " 親ディレクトリに戻れるように .. を追加
-    if l:dir != l:parent && l:dir != '/' && l:dir != $HOME
+    if l:dir != l:parent && l:dir != '/'
       call add(l:items, '..')
     endif
 
@@ -726,9 +734,50 @@ if g:use_fzf && executable('fzf')
 
   command! BuffersAndMRU call s:buffers_and_mru()
 
+  " 親ディレクトリに移動できる再帰的ファイル検索
+  command! -nargs=? FilesRecursive call s:files_recursive(<q-args>)
+  function! s:files_recursive(dir)
+    let l:dir = empty(a:dir) ? getcwd() : expand(a:dir)
+    let l:dir = fnamemodify(l:dir, ':p')
+    let l:dir = substitute(l:dir, '/$', '', '')
+
+    let l:parent = fnamemodify(l:dir, ':h')
+
+    " 親ディレクトリがある場合は .. を追加するコマンド
+    let l:parent_entry = ''
+    if l:dir != l:parent && l:dir != '/'
+      let l:parent_entry = 'echo ".." && '
+    endif
+
+    " findコマンドでファイル一覧を取得（systemlistを使わず直接パイプ）
+    let l:source_cmd = l:parent_entry . 'find ' . shellescape(l:dir) . ' -type f ! -path "*/\.git/*" 2>/dev/null'
+
+    call fzf#run(fzf#wrap({
+      \ 'source': l:source_cmd,
+      \ 'sink': function('s:files_recursive_sink', [l:dir]),
+      \ 'options': ['--prompt', fnamemodify(l:dir, ':~') . '> ']
+      \ }))
+  endfunction
+
+  function! s:files_recursive_sink(base_dir, selected)
+    if empty(a:selected)
+      return
+    endif
+
+    " .. を選択した場合は親ディレクトリへ移動
+    if a:selected ==# '..'
+      let l:parent = fnamemodify(a:base_dir, ':h')
+      call s:files_recursive(l:parent)
+      return
+    endif
+
+    " ファイルを開く
+    execute 'edit' fnameescape(a:selected)
+  endfunction
+
   " キーマッピング
-  " カレントディレクトリ配下を再帰的に検索
-  nnoremap <silent> ;uf :Files<CR>
+  " カレントディレクトリ配下を再帰的に検索（..を選択で親に移動）
+  nnoremap <silent> ;uf :FilesRecursive<CR>
   " バッファ一覧＋最近使ったファイル（unite.vimと同じ動作）
   nnoremap <silent> ;uu :BuffersAndMRU<CR>
   " Worksディレクトリ直下のみ（ディレクトリブラウザ）
@@ -738,8 +787,8 @@ if g:use_fzf && executable('fzf')
   " カレントディレクトリ直下のみ（ディレクトリブラウザ）
   nnoremap <silent> ;ud :FilesCurrentDir<CR>
 
-  " Worksディレクトリ全体検索（再帰的、元の;uwの動作）
-  exec 'nnoremap <silent> ;ua :Files '.$WORKS.'<CR>'
+  " Worksディレクトリ全体検索（再帰的、..で親移動可能）
+  exec 'nnoremap <silent> ;ua :FilesRecursive '.$WORKS.'<CR>'
 
   " 追加の便利なコマンド
   " MRUのみ表示（バッファは含まない）
