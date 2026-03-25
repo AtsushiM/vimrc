@@ -524,7 +524,7 @@ if g:use_fzf && executable('fzf')
   let g:fzf_layout = { 'up': '40%' }
 
   " 検索バーを上部に表示
-  let $FZF_DEFAULT_OPTS = '--layout=reverse'
+  let $FZF_DEFAULT_OPTS = '--layout=reverse --no-clear'
 
   " カラースキームに合わせる
   let g:fzf_colors =
@@ -600,7 +600,7 @@ if g:use_fzf && executable('fzf')
     call fzf#run(fzf#wrap({
       \ 'source': l:items,
       \ 'sink': function('s:fzf_dir_sink', [l:dir]),
-      \ 'options': ['--prompt', fnamemodify(l:dir, ':t') . '> ', '--expect=ctrl-v,ctrl-x,ctrl-t', '--ansi']
+      \ 'options': ['--prompt', fnamemodify(l:dir, ':t') . '> ', '--expect=ctrl-v,ctrl-x,ctrl-t']
       \ }))
   endfunction
 
